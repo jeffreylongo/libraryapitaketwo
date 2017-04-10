@@ -57,8 +57,8 @@ namespace libraryapitaketwo.Controllers
                 cmd.Parameters.AddWithValue("@YearPublished", book.YearPublished);
                 cmd.Parameters.AddWithValue("@Genre", book.Genre);
                 cmd.Parameters.AddWithValue("@IsCheckedOut", book.IsCheckedOut);
-                cmd.Parameters.AddWithValue("@LastCheckedOutDate", book.LastCheckedOutDate);
-                cmd.Parameters.AddWithValue("@DueBackDate", book.DueBackDate);
+                cmd.Parameters.AddWithValue("@LastCheckedOutDate",(object) book.LastCheckedOutDate ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@DueBackDate", (object) book.DueBackDate ?? DBNull.Value);
                 connection.Open();
                 var reader = cmd.ExecuteNonQuery();
                 connection.Close();
