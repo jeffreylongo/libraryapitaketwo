@@ -41,7 +41,7 @@ namespace libraryapitaketwo.Controllers
             var rv = new List<Book>();
             using (var connection = new SqlConnection(connectionString))
             {
-                var query = @"INSERT INTO [dbo].[LibraryTable] SET
+                /*var query = @"INSERT INTO LibraryTable
                 [Title] = @Title
                 ,[Author] = @Author
                 ,[YearPublished] = @YearPublished
@@ -49,7 +49,12 @@ namespace libraryapitaketwo.Controllers
                 ,[IsCheckedOut] = @IsCheckedOut
                 ,[LastCheckedOutDate] = @LastCheckedOutDate
                 ,[DueBackDate] = @DueBackDate
-                WHERE Id = @Id";
+                WHERE Id = @Id";*/
+                var query = @"INSERT INTO[dbo].[LibraryTable] ([Title], [Author], 
+                [YearPublished], [Genre], [IsCheckedOutDate], [LastCheckedOut], [DueBackDate]  
+                VALUES @Title, @Author, @YearPublished, @Genre, @IsCheckedOut, @LastCheckedOutDate, @DueBackDate)";
+
+
                 var cmd = new SqlCommand(query, connection);
                 connection.Open();
                 cmd.Parameters.AddWithValue("@Id", book.Id);
@@ -60,6 +65,7 @@ namespace libraryapitaketwo.Controllers
                 cmd.Parameters.AddWithValue("@IsCheckedOut", book.IsCheckedOut);
                 cmd.Parameters.AddWithValue("@LastCheckedOutDate", (object)book.LastCheckedOutDate ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@DueBackDate", (object)book.DueBackDate ?? DBNull.Value);
+                cmd.ExecuteNonQuery();
                 connection.Close();
             }
             return book;
