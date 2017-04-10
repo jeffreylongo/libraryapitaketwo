@@ -32,5 +32,39 @@ namespace libraryapitaketwo.Controllers
             return rv;
         }
 
+        [HttpPost]
+        public Book UpdateBook(int id, [FromBody]Book book)
+        {
+            const string connectionString =
+                            @"Server=localhost\SQLEXPRESS;Database=libraryapi;Trusted_Connection=True;";
+
+            var rv = new List<Book>();
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var query = @"UPDATE [dbo].[LibraryTable] SET
+                [Title] = @Title
+                ,[Author] = @Author
+                ,[YearPublished] = @YearPublished
+                ,[Genre] = @Genre
+                ,[IsCheckedOut] = @IsCheckedOut
+                ,[LastCheckedOutDate] = @LastCheckedOutDate
+                ,[DueBackDate] = @DueBackDate
+                WHERE Id = @Id";
+                var cmd = new SqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.Parameters.AddWithValue("@Title", book.Title);
+                cmd.Parameters.AddWithValue("@Author", book.Author);
+                cmd.Parameters.AddWithValue("@YearPublished", book.YearPublished);
+                cmd.Parameters.AddWithValue("@Genre", book.Genre);
+                cmd.Parameters.AddWithValue("@IsCheckedOut", book.IsCheckedOut);
+                cmd.Parameters.AddWithValue("@LastCheckedOutDate", book.LastCheckedOutDate);
+                cmd.Parameters.AddWithValue("@DueBackDate", book.DueBackDate);
+                connection.Open();
+                var reader = cmd.ExecuteNonQuery();
+                connection.Close();
+            }
+            book.Id = id;
+            return book;
+        }
     }
 }
