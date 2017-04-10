@@ -33,7 +33,7 @@ namespace libraryapitaketwo.Controllers
         }
 
         [HttpPut]
-        public Book AddBook(int id, [FromBody]Book book)
+        public Book AddBook([FromBody]Book book)
         {
             const string connectionString =
                             @"Server=localhost\SQLEXPRESS;Database=libraryapi;Trusted_Connection=True;";
@@ -41,7 +41,7 @@ namespace libraryapitaketwo.Controllers
             var rv = new List<Book>();
             using (var connection = new SqlConnection(connectionString))
             {
-                var query = @"UPDATE [dbo].[LibraryTable] SET
+                var query = @"INSERT INTO [dbo].[LibraryTable] SET
                 [Title] = @Title
                 ,[Author] = @Author
                 ,[YearPublished] = @YearPublished
@@ -52,7 +52,7 @@ namespace libraryapitaketwo.Controllers
                 WHERE Id = @Id";
                 var cmd = new SqlCommand(query, connection);
                 connection.Open();
-                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.Parameters.AddWithValue("@Id", book.Id);
                 cmd.Parameters.AddWithValue("@Title", book.Title);
                 cmd.Parameters.AddWithValue("@Author", book.Author);
                 cmd.Parameters.AddWithValue("@YearPublished", book.YearPublished);
@@ -60,8 +60,6 @@ namespace libraryapitaketwo.Controllers
                 cmd.Parameters.AddWithValue("@IsCheckedOut", book.IsCheckedOut);
                 cmd.Parameters.AddWithValue("@LastCheckedOutDate", (object)book.LastCheckedOutDate ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@DueBackDate", (object)book.DueBackDate ?? DBNull.Value);
-                var newId = cmd.ExecuteScalar();
-                book.Id = (int)newId;
                 connection.Close();
             }
             return book;
@@ -101,5 +99,7 @@ namespace libraryapitaketwo.Controllers
             book.Id = id;
             return book;
         }
+
+
     }
 }
