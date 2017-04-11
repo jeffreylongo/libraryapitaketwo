@@ -13,7 +13,7 @@ namespace libraryapitaketwo.Controllers
         [HttpGet]
         public List<Book> GetAllBooks()
         {
-            const string connectionString = 
+            const string connectionString =
                             @"Server=localhost\SQLEXPRESS;Database=libraryapi;Trusted_Connection=True;";
 
             var rv = new List<Book>();
@@ -41,18 +41,10 @@ namespace libraryapitaketwo.Controllers
             var rv = new List<Book>();
             using (var connection = new SqlConnection(connectionString))
             {
-                /*var query = @"INSERT INTO LibraryTable
-                [Title] = @Title
-                ,[Author] = @Author
-                ,[YearPublished] = @YearPublished
-                ,[Genre] = @Genre
-                ,[IsCheckedOut] = @IsCheckedOut
-                ,[LastCheckedOutDate] = @LastCheckedOutDate
-                ,[DueBackDate] = @DueBackDate
-                WHERE Id = @Id";*/
+
                 var query = @"INSERT INTO[dbo].[LibraryTable] ([Title], [Author], 
-                [YearPublished], [Genre], [IsCheckedOutDate], [LastCheckedOut], [DueBackDate]  
-                VALUES @Title, @Author, @YearPublished, @Genre, @IsCheckedOut, @LastCheckedOutDate, @DueBackDate)";
+                [YearPublished], [Genre], [IsCheckedOut], [LastCheckedOutDate], [DueBackDate])  
+                VALUES (@Title, @Author, @YearPublished, @Genre, @IsCheckedOut, @LastCheckedOutDate, @DueBackDate)";
 
 
                 var cmd = new SqlCommand(query, connection);
@@ -95,9 +87,29 @@ namespace libraryapitaketwo.Controllers
                 cmd.Parameters.AddWithValue("@Author", book.Author);
                 cmd.Parameters.AddWithValue("@YearPublished", book.YearPublished);
                 cmd.Parameters.AddWithValue("@Genre", book.Genre);
-                cmd.Parameters.AddWithValue("@IsCheckedOut", book.IsCheckedOut);
-                cmd.Parameters.AddWithValue("@LastCheckedOutDate",(object) book.LastCheckedOutDate ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@DueBackDate", (object) book.DueBackDate ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@IsCheckedOut", (object)book.IsCheckedOut ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@LastCheckedOutDate", (object)book.LastCheckedOutDate ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@DueBackDate", (object)book.DueBackDate ?? DBNull.Value);
+                connection.Open();
+                var reader = cmd.ExecuteNonQuery();
+                connection.Close();
+            }
+            book.Id = id;
+            return book;
+        }
+
+        [HttpDelete]
+        public Book DeleteBook(int id, [FromBody]Book book)
+        {
+            const string connectionString =
+                            @"Server=localhost\SQLEXPRESS;Database=libraryapi;Trusted_Connection=True;";
+
+            var rv = new List<Book>();
+            using (var connection = new SqlConnection(connectionString))
+            {
+                var query = @"DELETE FROM [dbo].[LibraryTable] WHERE Id = @Id";
+                var cmd = new SqlCommand(query, connection);
+
                 connection.Open();
                 var reader = cmd.ExecuteNonQuery();
                 connection.Close();
